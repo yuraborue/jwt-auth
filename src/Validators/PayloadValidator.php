@@ -79,7 +79,7 @@ class PayloadValidator extends AbstractValidator
             throw new TokenInvalidException('Issued At (iat) timestamp cannot be in the future', 400);
         }
 
-        if (Utils::timestamp($payload['exp'])->isPast()) {
+        if ((Utils::timestamp($payload['exp'])->isPast()) && (!env('EXPIRE_DISABLE', FALSE))) {
             throw new TokenExpiredException('Token has expired');
         }
 
@@ -94,7 +94,7 @@ class PayloadValidator extends AbstractValidator
      */
     protected function validateRefresh(array $payload)
     {
-        if (isset($payload['iat']) && Utils::timestamp($payload['iat'])->addMinutes($this->refreshTTL)->isPast()) {
+        if (isset($payload['iat']) && Utils::timestamp($payload['iat'])->addMinutes($this->refreshTTL)->isPast() && (!env('EXPIRE_DISABLE', FALSE))) {
             throw new TokenExpiredException('Token has expired and can no longer be refreshed', 400);
         }
 
